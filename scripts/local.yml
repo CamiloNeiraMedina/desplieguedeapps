@@ -1,0 +1,10 @@
+---
+- name: Basic playbook
+  gather_facts: true
+  hosts: all
+  tasks:
+   - name: Hacer un ping
+     ping:
+   - name: Show Info
+     debug:
+       msg:"Machine Name :{{ ansible_hostname }}"

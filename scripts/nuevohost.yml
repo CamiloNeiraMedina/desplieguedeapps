@@ -1,0 +1,24 @@
+---
+- name: Configuración de nuevo host
+  hosts: all
+  become: yes
+  tasks:
+  - name: Copiar archivo de configuración del virtualhost
+    copy:
+      src: nuevohost.conf
+      dest: /etc/apache2/sites-available/nuevohost.com.conf
+  - name: Habilitar nuevo virtualhost
+    command: a2ensite nuevohost.com.conf
+    notify:
+      - Reiniciar servicio de Apache
+  - name: Agregar html
+    copy:
+      src: nuevohost.html
+      dest: /var/www/nuevohost.com/public_html/nuevohost.html
+    notify:
+      - Reiniciar servicio de Apache
+  handlers:
+  - name: Reiniciar servicio de Apache
+    service:
+      name: apache2
+      state: restarted

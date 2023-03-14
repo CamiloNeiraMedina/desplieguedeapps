@@ -1,0 +1,13 @@
+---
+- name: Instalar Ambiente de pagina
+  hosts: all
+  become: True
+  tasks: 
+    - name: update package cache
+      apt:
+         update_cache: yes
+    - name: Install Apache2 y PHP
+      apt:
+         name: ['apache2', 'php']
+
+    

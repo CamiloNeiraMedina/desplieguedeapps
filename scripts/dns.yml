@@ -1,0 +1,29 @@
+---
+- name: Configurar DNS
+  hosts: all
+  become: true
+  vars:
+    dns_domain: cneiramedina.com
+    dns_ip_address: 192.168.1.10
+  tasks:
+    - name: Instalar Bind9
+      apt:
+        name: bind9
+        state: present
+
+    - name: Copiar archivo de zona
+      copy:
+        src: templates/db.cneiramedina.com.js
+        dest: /etc/bind/db.cneiramedina.com
+
+    - name: Configurar named.conf.local
+      lineinfile:
+        path: /etc/bind/named.conf.local
+        line: 'zone "{{ dns_domain }}" {\n  type master;\n  file "/etc/bind/db.{{ dns_domain }}";\n};'
+        insertafter: 'cneiramedina.com'
+        state: present
+
+    - name: Reiniciar servicio Bind9
+      systemd:
+        name: bind9
+        state: restarted

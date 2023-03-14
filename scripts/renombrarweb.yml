@@ -1,0 +1,29 @@
+---
+- name: Configuración de Apache
+  hosts: all
+  become: yes
+  tasks:
+  - name: Configurar la directiva ServerName en Apache
+    lineinfile:
+      path: /etc/apache2/apache2.conf
+      regexp: "^ServerName"
+      line: "ServerName cneiramedina.com"
+    notify:
+      - reiniciar apache
+  - name: Crear archivo de configuración para el sitio web
+    copy:
+      src: sitio_web.conf
+      dest: /etc/apache2/sites-available/cneiramedina.com.conf
+    notify:
+      - habilitar sitio web
+  handlers:
+  - name: habilitar sitio web
+    command: a2ensite cneiramedina.com.conf
+    args:
+      chdir: /etc/apache2/sites-available
+    notify:
+      - reiniciar apache
+  - name: reiniciar apache
+    service:
+      name: apache2
+      state: restarted
